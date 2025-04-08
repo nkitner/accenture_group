@@ -90,6 +90,14 @@ if __name__ == "__main__":
     )
     args = parser.parse_args()
     df.drop(columns =["Unnamed: 0"],inplace=True)
+    X = df.iloc[:,0:10].values
+    y = df.iloc[:,[10]].values
+    #train & test split
+    X_train,X_test,y_train,y_test = train_test_split(X,y,test_size=0.20,random_state=24)
+    #Feature Sclaing
+    ss = StandardScaler()
+    X_train_scaled = ss.fit_transform(X_train)
+    X_test_scaled = ss.fit_transform(X_test)=
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
