@@ -19,7 +19,7 @@ from fl4health.utils.metric_aggregation import evaluate_metrics_aggregation_fn, 
 # This is used if the config specifies source_specified as true
 DATA_PATH = "examples/feature_alignment_example/mimic3d_hospital1.csv"
 
-CONFIG_PATH = "examples/feature_alignment_example/config.yaml"
+CONFIG_PATH = "examples/feature_alignment_altman_example/config.yaml"
 
 
 def get_initial_model_parameters(input_dim: int, output_dim: int) -> Parameters:

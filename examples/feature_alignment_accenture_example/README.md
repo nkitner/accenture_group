@@ -19,8 +19,11 @@ In this example, we assume that the target column is the categorical column `LOS
 ## Starting Server
 
 Start the server by running something like
-```bash
+```
 python -m examples.feature_alignment_example.server --config_path /path/to/config.yaml
+```
+```
+python -m examples.feature_alignment_example.server --config_path examples/feature_alignment_example/config.yaml
 ```
 from the FL4Health directory. The following arguments must be present in the specified config file:
 * `n_clients`: number of clients the server waits for in order to run the FL training.
@@ -32,7 +35,7 @@ from the FL4Health directory. The following arguments must be present in the spe
 
 Once the server has started and logged "FL starting," the next step, in separate terminals, is to start the `n_clients`
 clients expected by the server. This is done by simply running (remembering to activate your environment)
-```bash
+```
 python -m examples.feature_alignment_example.client --dataset_path <path_to_dataset>
 ```
 * `path_to_dataset` is the path towards the directory where the dataset is stored. To see the feature alignment capability in this example, you should launch clients with misaligned datasets.
@@ -44,12 +47,12 @@ For this example, first start the server.
 
 Then run
 
-```bash
-python -m examples.feature_alignment_example.client --dataset_path /path/mimic3d_hospital1.csv
+```
+python -m examples.feature_alignment_example.client --dataset_path examples/datasets/mimic3d/mimic3d_hospital1.csv
 ```
 
 and then run
 
-```bash
-python -m examples.feature_alignment_example.client --dataset_path /path/mimic3d_hospital2.csv
+```
+python -m examples.feature_alignment_example.client --dataset_path examples/datasets/mimic3d/mimic3d_hospital2.csv
 ```

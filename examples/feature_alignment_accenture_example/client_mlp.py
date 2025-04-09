@@ -11,6 +11,10 @@ import torch.nn as nn
 from flwr.common.logger import log
 from flwr.common.typing import Config
 from sklearn.preprocessing import MaxAbsScaler
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import classification_report,confusion_matrix, ConfusionMatrixDisplay
 from torch.nn.modules.loss import _Loss
 from torch.optim import Optimizer
 from torch.utils.data import DataLoader, TensorDataset
@@ -45,11 +49,8 @@ class Mimic3TabularDataClient(TabularDataClient):
         train_targets = shuffled_targets[:split_point]
         val_targets = shuffled_targets[split_point:]
 
-        #TEMP removed toarray()
-        #tensor_train_data = torch.from_numpy(train_data.toarray()).float()
         tensor_train_data = torch.from_numpy(train_data).float()
         tensor_train_targets = torch.from_numpy(train_targets)
-        #tensor_val_data = torch.from_numpy(val_data.toarray()).float()
         tensor_val_data = torch.from_numpy(val_data).float()
         tensor_val_targets = torch.from_numpy(val_targets)
 
@@ -82,7 +83,7 @@ class Mimic3TabularDataClient(TabularDataClient):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="FL Client Main")
     parser.add_argument(
-        "--dataset_path", action="store", type=str, help="Path to the local dataset", default="examples/datasets"
+        "--dataset_path", action="store", type=str, help="Path to the local dataset", default="/BreastCancerDataRoystonAltman_subset_A.csv"
     )
     parser.add_argument(
         "--server_address",
@@ -92,16 +93,26 @@ if __name__ == "__main__":
         default="0.0.0.0:8080",
     )
     args = parser.parse_args()
+    data_path = Path(args.dataset_path)
+    df = pd.read_csv(data_path)
+    df.drop(columns =["id"],inplace=True)
+    X = df.iloc[:,0:10].values
+    y = df.iloc[:,[10]].values
+    #train & test split
+    X_train,X_test,y_train,y_test = train_test_split(X,y,test_size=0.20,random_state=24)
+    #Feature Sclaing
+    ss = StandardScaler()
+    X_train_scaled = ss.fit_transform(X_train)
+    X_test_scaled = ss.fit_transform(X_test)
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-    data_path = Path(args.dataset_path)
+    #data_path = Path(args.dataset_path)
 
     log(INFO, f"Device to be used: {device}")
     log(INFO, f"Server Address: {args.server_address}")
 
     # ham_id is the id column and LOSgroupNum is the target column.
-    # client = Mimic3TabularDataClient(data_path, [Accuracy("accuracy")], device, "id", ["LOSgroupNum"])
     client = Mimic3TabularDataClient(data_path, [Accuracy("accuracy")], device, "pid", ["status"])
     # This call demonstrates how the user may specify a particular sklearn pipeline for a specific feature.
     # client.preset_specific_pipeline("NumNotes", MaxAbsScaler())
