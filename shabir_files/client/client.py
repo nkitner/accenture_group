@@ -31,7 +31,7 @@ class NeuralNetClassifier(nn.Module):
         x = self.out(x)
         return x
 
-def train_model_early_stop(model, train_loader, val_loader, criterion, optimizer, scheduler, epochs=50, patience=10):
+def train_model_early_stop(model, train_loader, val_loader, criterion, optimizer, scheduler, client_id, epochs=50, patience=10):
     best_val_loss = float('inf')
     best_model_state = None
     epochs_no_improve = 0
@@ -75,16 +75,17 @@ def train_model_early_stop(model, train_loader, val_loader, criterion, optimizer
 
     if best_model_state is not None:
         model.load_state_dict(best_model_state)
-    final_model_save_path = "client_{args.client_id}.pt"
+    final_model_save_path = f"client_{client_id}.pt"
     torch.save(model.state_dict(), final_model_save_path)
     return model
 
 # Flower client implementation.
 class TorchFLClient(fl.client.NumPyClient):
-    def __init__(self, model, train_loader, val_loader):
+    def __init__(self, model, train_loader, val_loader, client_id):
         self.model = model
         self.train_loader = train_loader
         self.val_loader = val_loader
+        self.client_id = client_id
 
     # Return model parameters as a list of NumPy arrays
     def get_parameters(self, config: dict = None):
@@ -110,6 +111,7 @@ class TorchFLClient(fl.client.NumPyClient):
             scheduler=scheduler,
             epochs=50,
             patience=10,
+            client_id=self.client_id,
         )
         return self.get_parameters(), len(self.train_loader.dataset), {}
 
@@ -190,7 +192,7 @@ def init_main():
     model = NeuralNetClassifier(input_dim=input_dim, hidden_units=[128, 64, 32], dropout_rate=0.3).to(device)
 
     print(f"Client {args.client_id} Starting Flower client with dataset at: {args.dataset_path} connecting to server {args.server_address}")
-    fl_client = TorchFLClient(model, train_loader, val_loader)
+    fl_client = TorchFLClient(model, train_loader, val_loader, args.client_id)
     fl.client.start_client(server_address=args.server_address, client=fl_client)
 
 if __name__ == "__main__":
