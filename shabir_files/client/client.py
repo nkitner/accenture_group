@@ -75,6 +75,8 @@ def train_model_early_stop(model, train_loader, val_loader, criterion, optimizer
 
     if best_model_state is not None:
         model.load_state_dict(best_model_state)
+    final_model_save_path = "client_{args.client_id}.pt"
+    torch.save(model.state_dict(), final_model_save_path)
     return model
 
 # Flower client implementation.
@@ -154,6 +156,8 @@ def init_main():
                         help="Path to the local dataset")
     parser.add_argument("--server_address", type=str, default="0.0.0.0:8080",
                         help="Address of the Flower server")
+    parser.add_argument("--client_id", type=str, default="1",
+                        help="Client ID")
     args = parser.parse_args()
 
     df = pd.read_csv(args.dataset_path)
@@ -185,7 +189,7 @@ def init_main():
     input_dim = X_scaled.shape[1]
     model = NeuralNetClassifier(input_dim=input_dim, hidden_units=[128, 64, 32], dropout_rate=0.3).to(device)
 
-    print(f"Starting Flower client with dataset at: {args.dataset_path} connecting to server {args.server_address}")
+    print(f"Client {args.client_id} Starting Flower client with dataset at: {args.dataset_path} connecting to server {args.server_address}")
     fl_client = TorchFLClient(model, train_loader, val_loader)
     fl.client.start_client(server_address=args.server_address, client=fl_client)
 
