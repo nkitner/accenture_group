@@ -3,8 +3,8 @@
 # --- Configuration ---
 SERVER_SCRIPT="server/server.py"
 SERVER_CONFIG="server/config.yaml"
-DATASET_A="dataset/BreastCancerDataRoystonAltman_subset_A.csv"
-DATASET_B="dataset/BreastCancerDataRoystonAltman_subset_B.csv"
+DATASET_A="dataset/BreastCancerDataRoystonAltman_subset_A_younger.csv"
+DATASET_B="dataset/BreastCancerDataRoystonAltman_subset_B_older.csv"
 
 # Output log file names.
 SERVER_LOG="server.log"
@@ -26,13 +26,13 @@ sleep 5
 # --- Start the Clients ---
 # Client 1 with dataset A.
 echo "Starting Client 1 with ${DATASET_A}..."
-nohup python3 client/client.py --dataset_path ${DATASET_A} --server_address ${SERVER_ADDRESS} > ${CLIENT1_LOG} 2>&1 &
+nohup python3 client/client.py --dataset_path ${DATASET_A} --server_address ${SERVER_ADDRESS} --client_id ${"1"} > ${CLIENT1_LOG} 2>&1 &
 CLIENT1_PID=$!
 echo "Client 1 started with PID: ${CLIENT1_PID}"
 
 # Client 2 with dataset B.
 echo "Starting Client 2 with ${DATASET_B}..."
-nohup python3 client/client.py --dataset_path ${DATASET_B} --server_address ${SERVER_ADDRESS} > ${CLIENT2_LOG} 2>&1 &
+nohup python3 client/client.py --dataset_path ${DATASET_B} --server_address ${SERVER_ADDRESS} --client_id ${"2"} > ${CLIENT2_LOG} 2>&1 &
 CLIENT2_PID=$!
 echo "Client 2 started with PID: ${CLIENT2_PID}"
 
