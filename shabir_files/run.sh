@@ -11,6 +11,9 @@ SERVER_LOG="server.log"
 CLIENT1_LOG="client_1.log"
 CLIENT2_LOG="client_2.log"
 
+CLIENTID_1 = "1"
+CLIENTID_2 = "2"
+
 # Server address to be used by clients.
 SERVER_ADDRESS="0.0.0.0:8080"
 
@@ -26,13 +29,13 @@ sleep 5
 # --- Start the Clients ---
 # Client 1 with dataset A.
 echo "Starting Client 1 with ${DATASET_A}..."
-nohup python3 client/client.py --dataset_path ${DATASET_A} --server_address ${SERVER_ADDRESS} --client_id ${"1"} > ${CLIENT1_LOG} 2>&1 &
+nohup python3 client/client.py --dataset_path ${DATASET_A} --server_address ${SERVER_ADDRESS} --client_id ${CLIENTID_1} > ${CLIENT1_LOG} 2>&1 &
 CLIENT1_PID=$!
 echo "Client 1 started with PID: ${CLIENT1_PID}"
 
 # Client 2 with dataset B.
 echo "Starting Client 2 with ${DATASET_B}..."
-nohup python3 client/client.py --dataset_path ${DATASET_B} --server_address ${SERVER_ADDRESS} --client_id ${"2"} > ${CLIENT2_LOG} 2>&1 &
+nohup python3 client/client.py --dataset_path ${DATASET_B} --server_address ${SERVER_ADDRESS} --client_id ${CLIENTID_2} > ${CLIENT2_LOG} 2>&1 &
 CLIENT2_PID=$!
 echo "Client 2 started with PID: ${CLIENT2_PID}"
 
